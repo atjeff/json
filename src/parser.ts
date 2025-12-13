@@ -41,11 +41,11 @@ export function parser(tokens: Token[]): ASTNode {
       }
 
       case "OPEN_BRACE": {
-        return parseObject(); //Will be implemented soon
+        return parseObject();
       }
 
       case "OPEN_BRACKET": {
-        return parseArray(); //Will be implemented soon
+        return parseArray();
       }
 
       default: {
@@ -86,7 +86,7 @@ export function parser(tokens: Token[]): ASTNode {
       token = advance();
 
       // Check for a comma to handle multiple key-value pairs
-      if (token.type === "COMMA") {
+      if (token && token.type === "COMMA") {
         token = advance();
       }
     }
@@ -109,6 +109,8 @@ export function parser(tokens: Token[]): ASTNode {
         token = advance(); // Eat ',' if present
       }
     }
+
+    return node;
   }
 
   return parseValue();
