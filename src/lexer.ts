@@ -76,7 +76,36 @@ export function lexer(input: string): Token[] {
 
       // Read until the next double quote
       while (char !== '"') {
-        value += char;
+        if (char === "\\") {
+          char = input[++current];
+          switch (char) {
+            case "n": {
+              value += "\n";
+              break;
+            }
+            case "r": {
+              value += "\r";
+              break;
+            }
+            case "t": {
+              value += "\t";
+              break;
+            }
+            case "\\": {
+              value += "\\";
+              break;
+            }
+            case '"': {
+              value += '"';
+              break;
+            }
+            default: {
+              value += "\\" + char;
+            }
+          }
+        } else {
+          value += char;
+        }
         char = input[++current];
       }
 
@@ -86,14 +115,14 @@ export function lexer(input: string): Token[] {
     }
 
     // This should be a number, boolean, or null
-    if (/[\d\w]/.test(char)) {
+    if (/[-.0-9nrtf]/.test(char)) {
       let value = "";
-      while (char && /[\d\w]/.test(char)) {
+      while (char && /[.0-9+Eetrfualsn-]/.test(char)) {
         value += char;
         char = input[++current];
       }
 
-      if (Number.isInteger(Number(value))) {
+      if (!isNaN(Number(value))) {
         tokens.push({ type: "NUMBER", value: Number(value) });
       } else if (value === "true") {
         tokens.push({ type: "TRUE", value: "true" });

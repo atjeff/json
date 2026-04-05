@@ -31,9 +31,12 @@ export function parser(tokens: Token[]): ASTNode {
         return { type: "Number", value: Number(token.value) };
       }
 
-      case "TRUE":
+      case "TRUE": {
+        return { type: "Boolean", value: true };
+      }
+
       case "FALSE": {
-        return { type: "Boolean", value: Boolean(token.value) };
+        return { type: "Boolean", value: false };
       }
 
       case "NULL": {
@@ -88,6 +91,9 @@ export function parser(tokens: Token[]): ASTNode {
       // Check for a comma to handle multiple key-value pairs
       if (token && token.type === "COMMA") {
         token = advance();
+        if (token.type === "CLOSE_BRACE") {
+          throw new Error("Unexpected token: }");
+        }
       }
     }
 
@@ -107,6 +113,8 @@ export function parser(tokens: Token[]): ASTNode {
       token = advance(); // Eat value or ','
       if (token.type === "COMMA") {
         token = advance(); // Eat ',' if present
+      } else if (token.type !== "CLOSE_BRACKET") {
+        throw new Error("Unexpected token");
       }
     }
 
